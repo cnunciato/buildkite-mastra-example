@@ -7,46 +7,72 @@ import { Pipeline } from "@buildkite/buildkite-sdk";
 
 const execFileAsync = promisify(execFile);
 
-const getAffectedPaths = createStep({
-    id: "get-affected-paths",
+const getTestCategories = createStep({
+    id: "get-test-categories",
     description: "Lists the files that were changed in a given Git commit.",
     inputSchema: z.object({
         sha: z.string().describe("The Git SHA of the commit to examine"),
         path: z.string().describe("The fully qualified path to the Git repository"),
     }),
     outputSchema: z.object({
-        affected: z.array(z.string()).describe("The list of affected projects."),
+        categories: z.array(z.string()).describe("The list of test categories to be run."),
     }),
     execute: async ({ inputData, mastra }) => {
         const { sha, path } = inputData;
-        const agent = mastra.getAgent("changeAnalyst");
 
-        const { stdout } = await execFileAsync(
-            "git",
-            ["show", "--name-only", "--pretty=format:", sha],
-            { cwd: path },
-        );
-
-        console.log(stdout.trim());
-
-        console.log();
+        const { stdout: log } = await execFileAsync("git", ["show", sha], { cwd: path });
 
         const prompt = `
-            Using the git_git_show tool, list the filenames that were changed in the Git SHA '${sha}'
-            in the current Git repository.
-        `;
+            Analyze the the following Git log and diff and decide whether to run either the 'unit' tests, 'e2e' tests, or both for the application at 'apps/web':
 
+            ${log}
+
+            Return your results as a list of strings consisting of only "unit" or "e2e". No other options are valid.
+
+            If the commit indicates no changes were made to 'apps/web', return an empty list.
+        `.trim();
+
+        const agent = mastra.getAgent("changeAnalyst");
         const response = await agent.generate(prompt.trim(), {
             output: z.object({
-                affected: z
+                categories: z
                     .array(z.string())
-                    .describe("The list of files that were changed in the specified Git commit."),
+                    .describe(
+                        "The list of test categories that should be run, based on the supplied Git metadata.",
+                    ),
             }),
             toolsets: await mcp.getToolsets(),
         });
 
         return {
-            affected: response.object.affected,
+            categories: response.object.categories,
+        };
+    },
+});
+
+const generatePipeline = createStep({
+    id: "get-affected-paths",
+    description: "Lists the files that were changed in a given Git commit.",
+    inputSchema: z.object({
+        categories: z.array(z.string().describe("The list of test categories to be run")),
+    }),
+    outputSchema: z.object({
+        pipeline: z.string().describe("The pipeline YAML."),
+    }),
+    execute: async ({ inputData, mastra }) => {
+        const { categories } = inputData;
+
+        const pipeline = new Pipeline();
+
+        categories.forEach(category => {
+            pipeline.addStep({
+                label: ":rocket: Do stuff!",
+                command: `npm run test:${category}`,
+            });
+        });
+
+        return {
+            pipeline: pipeline.toYAML(),
         };
     },
 });
@@ -61,5 +87,5 @@ export const pipeline = createWorkflow({
         .array(z.string())
         .describe("The list of files that were changed in the specified Git commit."),
 })
-    .then(getAffectedPaths)
+    .then(getTestCategories)
     .commit();
