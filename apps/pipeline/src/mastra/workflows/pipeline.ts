@@ -61,15 +61,15 @@ const generatePipeline = createStep({
     outputSchema: z.object({
         pipeline: z.string().describe("The Buildkite pipeline YAML"),
     }),
-    execute: async ({ inputData, mastra }) => {
+    execute: async ({ inputData }) => {
         const { categories } = inputData;
 
         const pipeline = new Pipeline();
 
         categories.forEach(category => {
             pipeline.addStep({
-                label: ":rocket: Do stuff!",
-                command: `npm run test:${category}`,
+                label: `:test_tube: Run ${category} tests`,
+                command: `npm -w web run test:${category}`,
             });
         });
 
