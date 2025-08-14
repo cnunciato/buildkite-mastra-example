@@ -57,7 +57,7 @@ const generatePipeline = createStep({
         categories: z.array(z.string().describe("The list of test categories to be run")),
     }),
     outputSchema: z.object({
-        pipeline: z.string().describe("The pipeline YAML."),
+        pipeline: z.string().describe("The Buildkite pipeline YAML"),
     }),
     execute: async ({ inputData, mastra }) => {
         const { categories } = inputData;
@@ -83,9 +83,8 @@ export const pipeline = createWorkflow({
         sha: z.string().describe("The Git SHA to examine"),
         path: z.string().describe("The Git repository path"),
     }),
-    outputSchema: z
-        .array(z.string())
-        .describe("The list of files that were changed in the specified Git commit."),
+    outputSchema: z.array(z.string()).describe("The Buildkite pipeline YAML"),
 })
     .then(getTestCategories)
+    .then(generatePipeline)
     .commit();
