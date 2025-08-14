@@ -1,5 +1,5 @@
 steps:
-  - label: ":test_tube: Run unit tests"
-    command: npm -w web run test:unit
-  - label: ":test_tube: Run e2e tests"
-    command: npm -w web run test:e2e
+  - label: ":robot: Generate pipeline"
+    command: |
+      npm run pipeline
+      buildkite-agent pipeline upload
