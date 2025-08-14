@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.2.12",
+    "@buildkite/buildkite-sdk": "^0.3.2",
     "@mastra/core": "^0.13.2",
     "@mastra/libsql": "^0.13.2",
     "@mastra/loggers": "^0.10.6",

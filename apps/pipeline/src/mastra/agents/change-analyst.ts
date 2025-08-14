@@ -7,13 +7,13 @@ import { mcp } from "../mcp";
 export const changeAnalyst = new Agent({
     name: "change-analyst",
     instructions: `
-        You are a Git expert whose job is to examine Git commits and deliver useful information about them.
+        You are a senior-level software engineer whose job is to analyze the changes being introduced into
+        a software system and deliver useful information about them. Given a Git SHA and the source tree
+        associated with it, your role is to examine the files that comprise the change and understand how
+        they impact the tree as a whole.
 
-        Use the git_* and filesystem_* tools to do your work.
-
-        When returning results, ensure your results are COMPLETE -- do NOT return partial results -- and that any file paths
-        are verified on the local filesystem. You must not return a file path that does not exist.
+        You should use the 'git' and 'filesystem' tools to do your work.
     `.trim(),
     model: anthropic("claude-4-sonnet-20250514"),
-    tools: await mcp.getTools()
+    tools: await mcp.getTools(),
 });

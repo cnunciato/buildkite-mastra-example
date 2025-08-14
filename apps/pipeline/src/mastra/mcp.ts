@@ -1,7 +1,6 @@
 import { MCPClient, MastraMCPServerDefinition } from "@mastra/mcp";
 
 let servers: Record<string, MastraMCPServerDefinition> = {};
-const rootPath = "/Users/cnunciato/Projects/cnunciato/buildkite-mastra-example";
 
 if (process.env.BUILDKITE_API_TOKEN) {
     servers["buildkite"] = {
@@ -22,24 +21,13 @@ if (process.env.BUILDKITE_API_TOKEN) {
 }
 
 servers["git"] = {
-    command: "docker",
-    args: [
-        "run",
-        "-i",
-        "--rm",
-        "--mount",
-        `type=bind,src=${rootPath},dst=${rootPath}`,
-        "mcp/git",
-    ],
+    command: "uvx",
+    args: ["mcp-server-git"],
 };
 
 servers["filesystem"] = {
     command: "npx",
-    args: [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        rootPath,
-    ],
+    args: ["-y", "@modelcontextprotocol/server-filesystem", process.env.PWD || ""],
 };
 
 if (process.env.GITHUB_TOKEN) {

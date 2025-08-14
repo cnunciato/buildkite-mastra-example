@@ -1,6 +1,11 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 import { mcp } from "../mcp";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
+import { Pipeline } from "@buildkite/buildkite-sdk";
+
+const execFileAsync = promisify(execFile);
 
 const getAffectedPaths = createStep({
     id: "get-affected-paths",
@@ -12,16 +17,23 @@ const getAffectedPaths = createStep({
     outputSchema: z.object({
         affected: z.array(z.string()).describe("The list of affected projects."),
     }),
-    execute: async ({ runtimeContext, inputData, mastra }) => {
+    execute: async ({ inputData, mastra }) => {
         const { sha, path } = inputData;
         const agent = mastra.getAgent("changeAnalyst");
 
-        const prompt = `
-            Using the git_show tool, list the filenames, using FULLY_QUALIFIED paths, that were changed in the Git SHA ${sha}.
+        const { stdout } = await execFileAsync(
+            "git",
+            ["show", "--name-only", "--pretty=format:", sha],
+            { cwd: path },
+        );
 
-            Use these values as tool inputs:
-            * repo_path: ${path}
-            * revision: ${sha}
+        console.log(stdout.trim());
+
+        console.log();
+
+        const prompt = `
+            Using the git_git_show tool, list the filenames that were changed in the Git SHA '${sha}'
+            in the current Git repository.
         `;
 
         const response = await agent.generate(prompt.trim(), {
@@ -30,11 +42,8 @@ const getAffectedPaths = createStep({
                     .array(z.string())
                     .describe("The list of files that were changed in the specified Git commit."),
             }),
-            toolsets: await mcp.getToolsets()
+            toolsets: await mcp.getToolsets(),
         });
-
-        console.log({ prompt });
-        console.log({ runtimeContext});
 
         return {
             affected: response.object.affected,
@@ -48,7 +57,9 @@ export const pipeline = createWorkflow({
         sha: z.string().describe("The Git SHA to examine"),
         path: z.string().describe("The Git repository path"),
     }),
-    outputSchema: z.array(z.string()).describe("The list of files that were changed in the specified Git commit."),
+    outputSchema: z
+        .array(z.string())
+        .describe("The list of files that were changed in the specified Git commit."),
 })
     .then(getAffectedPaths)
     .commit();
