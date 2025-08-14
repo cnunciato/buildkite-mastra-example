@@ -1,9 +1,9 @@
 steps:
-  - label: ":robot: Generate pipeline"
+  - label: ":sparkles: Analyze changes"
     command: |
       npm install
       npm run pipeline
-      buildkite-agent pipeline upload
+      cat apps/pipeline/dist/pipeline.yml | buildkite-agent pipeline upload
     plugins:
       - secrets#v1.0.0:
           variables:

@@ -53,8 +53,8 @@ const determineTestTypes = createStep({
 });
 
 const generatePipeline = createStep({
-    id: "get-affected-paths",
-    description: "Lists the files that were changed in a given Git commit.",
+    id: "generate-pipeline",
+    description: "Generates the Buildkite pipeline to run the tests.",
     inputSchema: z.object({
         categories: z.array(z.string().describe("The list of test categories to be run")),
     }),
@@ -65,10 +65,14 @@ const generatePipeline = createStep({
         const { categories } = inputData;
 
         const pipeline = new Pipeline();
+        const emojis: { [key: string]: string } = {
+            unit: ":vitest:",
+            e2e: ":playwright:",
+        };
 
         categories.forEach(category => {
             pipeline.addStep({
-                label: `:test_tube: Run ${category} tests`,
+                label: `${emojis[category]} Run ${category} tests`,
                 command: `npm -w web run test:${category}`,
             });
         });

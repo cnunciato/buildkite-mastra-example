@@ -10,7 +10,7 @@
         "test": "turbo test",
         "build": "turbo build",
         "format": "prettier . --write --config ./prettier.config.json",
-        "pipeline": "npx tsx apps/pipeline/src/mastra/run.ts"
+        "pipeline": "npx tsx apps/pipeline/src/mastra/generate.ts"
     },
     "workspaces": [
         "apps/*"
