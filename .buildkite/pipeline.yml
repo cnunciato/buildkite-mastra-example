@@ -1,5 +1,6 @@
 steps:
   - label: ":robot: Generate pipeline"
     command: |
+      npm install
       npm run pipeline
       buildkite-agent pipeline upload
