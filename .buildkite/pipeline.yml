@@ -4,3 +4,7 @@ steps:
       npm install
       npm run pipeline
       buildkite-agent pipeline upload
+    plugins:
+      - secrets#v1.0.0:
+          variables:
+            ANTHROPIC_API_KEY: ANTHROPIC_API_KEY
