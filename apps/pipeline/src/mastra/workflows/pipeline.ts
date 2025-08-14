@@ -7,7 +7,7 @@ import { Pipeline } from "@buildkite/buildkite-sdk";
 
 const execFileAsync = promisify(execFile);
 
-const getTestCategories = createStep({
+const determineTestTypes = createStep({
     id: "get-test-categories",
     description: "Lists the files that were changed in a given Git commit.",
     inputSchema: z.object({
@@ -20,7 +20,9 @@ const getTestCategories = createStep({
     execute: async ({ inputData, mastra }) => {
         const { sha, path } = inputData;
 
-        const { stdout: log } = await execFileAsync("git", ["show", sha], { cwd: path });
+        const { stdout: log } = await execFileAsync("git", ["show", sha], {
+            cwd: path,
+        });
 
         const prompt = `
             Analyze the the following Git log and diff and decide whether to run either the 'unit' tests, 'e2e' tests, or both for the application at 'apps/web':
@@ -85,6 +87,6 @@ export const pipeline = createWorkflow({
     }),
     outputSchema: z.array(z.string()).describe("The Buildkite pipeline YAML"),
 })
-    .then(getTestCategories)
+    .then(determineTestTypes)
     .then(generatePipeline)
     .commit();
