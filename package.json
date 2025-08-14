@@ -1,0 +1,16 @@
+{
+    "packageManager": "npm@10.9.2",
+    "devDependencies": {
+        "prettier": "^3.6.2",
+        "turbo": "^2.5.5"
+    },
+    "type": "module",
+    "scripts": {
+        "dev": "turbo dev",
+        "build": "turbo build",
+        "format": "prettier . --write --config ./prettier.config.json"
+    },
+    "workspaces": [
+        "apps/*"
+    ]
+}
