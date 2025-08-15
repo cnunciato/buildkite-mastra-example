@@ -3,7 +3,7 @@ steps:
     command: |
       echo "--- Install dependencies"
       npm install
-      npx playwright install
+      npx playwright install --with-deps
 
       echo "--- :sparkles: Generate the pipeline"
       npm run pipeline
