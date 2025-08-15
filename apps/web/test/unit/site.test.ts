@@ -3,6 +3,6 @@ import { title } from "../../src/content/site";
 
 describe("content", () => {
     test("site title", () => {
-        expect(title).toBe("Astro Basics");
+        expect(title).toBe("Astro Stuff");
     });
 });
