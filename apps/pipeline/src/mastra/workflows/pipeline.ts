@@ -58,7 +58,7 @@ const determineTestTypes = createStep({
 
 const generatePipeline = createStep({
     id: "generate-pipeline",
-    description: "Generates the Buildkite pipeline to run the tests.",
+    description: "Generates the Buildkite pipeline to run the unit or e2e tests.",
     inputSchema: z.object({
         categories: z.array(z.string().describe("The list of test categories to be run")),
     }),
