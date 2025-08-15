@@ -103,8 +103,7 @@ const generatePipeline = createStep({
                     return {
                         label: `${emojis[category]} Run ${category} tests`,
                         commands: [
-                            "npm install",
-                            "npx playwright install --with-deps",
+                            `npm install && ${category === "e2e" ? "npx playwright install --with-deps" : "true"}`,
                             `npm -w web run test:${category}`,
                         ],
                     };
