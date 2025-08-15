@@ -2,6 +2,7 @@ steps:
   - label: ":sparkles: Analyze changes"
     command: |
       npm install
+      npm install --workspaces
       npm run pipeline
       cat apps/pipeline/dist/pipeline.yml | buildkite-agent pipeline upload
     plugins:

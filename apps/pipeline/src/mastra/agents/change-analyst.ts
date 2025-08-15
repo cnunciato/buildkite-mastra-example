@@ -10,7 +10,7 @@ export const changeAnalyst = new Agent({
         and access to the full source tree at a given path, you use your expert knowledge of Git and understanding
         of the codebase to recommend which tests to run.
 
-        Your job is to ensure that ONLY the tests that NEED to be run get run. Efficiency is key.
+        Your job is to ensure that ONLY the tests that NEED to be run get run.
 
         You should use the 'filesystem' tool as needed for this.
     `.trim(),

@@ -25,13 +25,17 @@ const determineTestTypes = createStep({
         });
 
         const prompt = `
-            Analyze the the following Git log and diff and decide whether to run either the 'unit' tests, 'e2e' tests, or both for the application at 'apps/web':
+            Analyze the the following Git log and diff and decide whether to run either the 'unit' tests, end to end ('e2e') tests, or both,
+            for the application that lives at './apps/web':
 
             ${log}
 
             Return your results as a list of strings consisting of only "unit" or "e2e". No other options are valid.
 
-            If the commit indicates no changes were made to 'apps/web', return an empty list.
+            Guidelines:
+            * Disregard code comments and changes to READMEs entirely. When deciding whether to run tests, only consider
+              changes made to actual program code.
+            * If the commit makes no changes any code files in './apps/web', return an empty list.
         `.trim();
 
         const agent = mastra.getAgent("changeAnalyst");
