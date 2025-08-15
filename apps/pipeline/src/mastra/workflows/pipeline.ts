@@ -25,18 +25,28 @@ const determineTestTypes = createStep({
         });
 
         const prompt = `
-            Analyze the the following Git log and diff and decide whether to run either the 'unit' tests, end to end ('e2e') tests, or both,
-            for the application that lives at './apps/web':
+            Analyze the following Git log and diff and decide whether to run either the 'unit' tests,
+            end-to-end ('e2e') tests, or both, for the application that lives at './apps/web':
 
             ${log}
 
-            Return your results as a list of strings consisting of only "unit" or "e2e". No other options are valid.
+            Return your results as an object containing a list of strings consisting of only "unit"
+            or "e2e" — no other options are valid — along with a brief explanation of your reasoning.
+
+            Examples:
+            {
+                categories: [
+                    "unit",
+                    "e2e"
+                ],
+                reason: "I chose to run both unit and e2e tests because I saw that the shared module 'src/content/site.ts' was included in the change."
+            }
 
             Guidelines:
-            * Disregard code comments and changes to READMEs entirely. When deciding whether to run tests, only consider
-              changes made to actual program code.
-            * If the commit makes no changes any code files in './apps/web', return an empty list.
-        `.trim();
+            - Disregard code comments and changes to READMEs entirely. When deciding whether to run tests,
+              only consider changes made to actual program code.
+            - If the commit makes no changes any code files in the './apps/web' folder, return an empty list.
+        `;
 
         const agent = mastra.getAgent("changeAnalyst");
         const response = await agent.generate(prompt.trim(), {
@@ -46,9 +56,15 @@ const determineTestTypes = createStep({
                     .describe(
                         "The list of test categories that should be run, based on the supplied Git metadata.",
                     ),
+                reason: z
+                    .string()
+                    .describe("A brief explanation as to why these categories were chosen"),
             }),
             toolsets: await mcp.getToolsets(),
         });
+
+        console.log(`--- :thinking_face: Result of analysis`);
+        console.log(response.object.reason);
 
         return {
             categories: response.object.categories,
@@ -61,6 +77,7 @@ const generatePipeline = createStep({
     description: "Generates the Buildkite pipeline to run the unit or e2e tests.",
     inputSchema: z.object({
         categories: z.array(z.string().describe("The list of test categories to be run")),
+        reason: z.string().describe("A brief explanation as to why these categories were chosen"),
     }),
     outputSchema: z.object({
         pipeline: z.string().describe("The Buildkite pipeline YAML"),
@@ -74,11 +91,14 @@ const generatePipeline = createStep({
             e2e: ":playwright:",
         };
 
-        categories.forEach(category => {
-            pipeline.addStep({
-                label: `${emojis[category]} Run ${category} tests`,
-                commands: ["npm install", `npm -w web run test:${category}`],
-            });
+        pipeline.addStep({
+            group: ":test_tube: Run the tests",
+            steps: categories.map(category => {
+                return {
+                    label: `${emojis[category]} Run ${category} tests`,
+                    commands: ["npm install", `npm -w web run test:${category}`],
+                };
+            }),
         });
 
         return {
