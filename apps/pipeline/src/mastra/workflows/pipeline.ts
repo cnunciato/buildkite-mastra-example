@@ -43,6 +43,10 @@ const determineTestTypes = createStep({
             }
 
             Guidelines:
+            - You MUST examine the files  involved in the change as well as their relationships when making decisions.
+              Do not simply make assumptions about what kinds of tests that seem appropriate given the diff. Actually
+              open and read the files to determine how their code paths relate to other files that may not belong
+              to the change. (You may need to examine these files as well to develop a complete picture.)
             - Disregard code comments and changes to READMEs entirely. When deciding whether to run tests,
               only consider changes made to actual program code.
             - If the commit makes no changes any code files in the './apps/web' folder, return an empty list.
