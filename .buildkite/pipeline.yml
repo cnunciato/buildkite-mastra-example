@@ -5,7 +5,7 @@ steps:
       npm install
       npx playwright install
 
-      echo "--- Generate the pipeline!"
+      echo "--- :sparkles: Generate the pipeline"
       npm run pipeline
       cat apps/pipeline/dist/pipeline.yml | buildkite-agent pipeline upload
     plugins:

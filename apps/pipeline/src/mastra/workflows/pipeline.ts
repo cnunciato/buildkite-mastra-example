@@ -91,15 +91,17 @@ const generatePipeline = createStep({
             e2e: ":playwright:",
         };
 
-        pipeline.addStep({
-            group: ":test_tube: Run the tests",
-            steps: categories.map(category => {
-                return {
-                    label: `${emojis[category]} Run ${category} tests`,
-                    commands: ["npm install", `npm -w web run test:${category}`],
-                };
-            }),
-        });
+        if (categories.length > 0) {
+            pipeline.addStep({
+                group: ":test_tube: Run the tests",
+                steps: categories.map(category => {
+                    return {
+                        label: `${emojis[category]} Run ${category} tests`,
+                        commands: ["npm install", `npm -w web run test:${category}`],
+                    };
+                }),
+            });
+        }
 
         return {
             pipeline: pipeline.toYAML(),
