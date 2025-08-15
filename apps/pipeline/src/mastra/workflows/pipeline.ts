@@ -73,7 +73,7 @@ const generatePipeline = createStep({
         categories.forEach(category => {
             pipeline.addStep({
                 label: `${emojis[category]} Run ${category} tests`,
-                command: `npm -w web run test:${category}`,
+                commands: ["npm install", `npm -w web run test:${category}`],
             });
         });
 
