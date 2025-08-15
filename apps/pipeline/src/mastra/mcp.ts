@@ -21,11 +21,6 @@ if (process.env.BUILDKITE_API_TOKEN) {
     };
 }
 
-// servers["git"] = {
-//     command: "uvx",
-//     args: ["mcp-server-git"],
-// };
-
 if (process.env.PWD) {
     servers["filesystem"] = {
         command: "npx",
@@ -36,22 +31,6 @@ if (process.env.PWD) {
         ],
     };
 }
-
-// if (process.env.GITHUB_TOKEN) {
-//     servers["github"] = {
-//         url: new URL("https://api.githubcopilot.com/mcp/"),
-//         requestInit: {
-//             headers: {
-//                 Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-//             },
-//         },
-//     };
-// }
-
-// servers["fetch"] = {
-//     command: "docker",
-//     args: ["run", "-i", "--rm", "mcp/fetch"],
-// };
 
 export const mcp = new MCPClient({
     servers,
