@@ -1,1 +1,1 @@
-export const title = "Astro Stuff";
+export const title = "Astro Basics";
