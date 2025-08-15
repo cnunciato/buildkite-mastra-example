@@ -63,8 +63,9 @@ const determineTestTypes = createStep({
             toolsets: await mcp.getToolsets(),
         });
 
-        console.log(`--- :thinking_face: Result of analysis`);
+        console.log(`--- :teacher: Explain reasoning`);
         console.log(response.object.reason);
+        console.log();
 
         return {
             categories: response.object.categories,
