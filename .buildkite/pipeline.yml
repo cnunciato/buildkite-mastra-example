@@ -1,8 +1,11 @@
 steps:
   - label: ":sparkles: Analyze changes"
     command: |
+      echo "--- Install dependencies"
       npm install
-      npm install --workspaces
+      npx playwright install
+
+      echo "--- Generate the pipeline!"
       npm run pipeline
       cat apps/pipeline/dist/pipeline.yml | buildkite-agent pipeline upload
     plugins:
