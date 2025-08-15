@@ -1,10 +1,11 @@
-# Buildkite Mastra Example
+# Buildkite Mastra Example [![Build status](https://badge.buildkite.com/b081ea7c86665b9e9b8ecdd7bf543cb7115ffd6b37ec599ff1.svg)](https://buildkite.com/cnunciato/buildkite-mastra-example)
 
 A demonstration project showing how to use Mastra AI workflows to intelligently generate Buildkite CI/CD pipelines based on Git commit analysis.
 
 ## Overview
 
 This project consists of two main applications:
+
 - **Pipeline**: A Mastra-powered workflow that analyzes Git commits and generates appropriate Buildkite test pipelines
 - **Web**: An Astro web application with unit and end-to-end tests
 
@@ -13,6 +14,7 @@ The pipeline workflow uses AI to examine Git diffs and intelligently determine w
 ## Installation
 
 1. Clone the repository:
+
    ```bash
    git clone <repository-url>
    cd buildkite-mastra-example
@@ -44,11 +46,13 @@ npm run pipeline
 ```
 
 This command will:
+
 1. Analyze the current HEAD commit (or specify a different SHA as an argument)
 2. Use AI to determine which tests should run based on the changed files
 3. Generate a Buildkite pipeline YAML file at `apps/pipeline/dist/pipeline.yml`
 
 You can also specify a custom Git SHA and repository path:
+
 ```bash
 npx tsx apps/pipeline/src/mastra/generate.ts <sha> <repo-path>
 ```
@@ -56,6 +60,7 @@ npx tsx apps/pipeline/src/mastra/generate.ts <sha> <repo-path>
 ### Running Tests
 
 For the web application:
+
 - Unit tests: `npm run test:unit -w web`
 - End-to-end tests: `npm run test:e2e -w web`
 - All tests: `npm run test -w web`
